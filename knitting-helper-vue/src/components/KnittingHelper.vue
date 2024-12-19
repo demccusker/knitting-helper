@@ -35,31 +35,51 @@ export default {
             for (let i = 0; i < lines.length; i++) {
                 let line = lines[i];
                 let cleanLine = '';
-                if (!(/^row\s+\d+:/i.test(line))){
+                if (!(/^row\s+\d+:/i.test(line))) {
                     cleanLine = `Row ${i + 1}: ` + line;
 
-                
+
                 }
-                if (/knit (the )?knits and purl (the )?purls/i.test(line)) {
+                if (/knit (all) (the )?knits and purl (all) (the )?purls/i.test(line)) {
                     knitAllKnitsFound = true;
-                    let previousLine = cleanedLines[i - 1] 
+                    let previousLine = cleanedLines[i - 1]
                     cleanLine = this.convertRow(previousLine);
                 }
-                else if (knitAllKnitsFound & i % 2 == 0){
-                    let previousLine = cleanedLines[i - 1] 
+                else if (knitAllKnitsFound && i % 2 == 0 && i > 0) {
+                    let previousLine = cleanedLines[i - 1]
                     cleanLine = this.convertRow(previousLine);
 
+                }
+                else {
+                    cleanLine = cleanLine || line;
                 }
                 cleanedLines.push(cleanLine);
             }
-            return cleanedLines;
+            this.labeledPattern = cleanedLines;
         },
         convertRow(row) {
-            console.log("calling function")
-            const index = row.index;
-            let aboveRow = this.labeledPattern[index - 1];
-            let spacedRow = aboveRow.split(' ');
-            console.log(aboveRow);
+            console.log("calling function on row: ", row)
+            let newRow = '';
+            let spacedRow = row.split(" ");
+            for (let i = spacedRow.length; i > 0; i--) {
+                let match = /[kp](\d+)/.exec(spacedRow[i]);
+                console.log(match);
+                if (match) {
+                    let stitchType = match[0];
+                    console.log(stitchType);
+                    let number = parseInt(match[1], 10);
+
+                    if (stitchType == "k") {
+                        newRow = newRow + "p" + number + ", ";
+
+                    }
+                    else {
+                        newRow = newRow + "k" + number + ", ";
+                    }
+
+                }
+            }
+            return newRow;
 
 
         }
