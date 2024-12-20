@@ -1,7 +1,7 @@
 <template>
     <div>
         <form action="">
-            <label for="pattern">Add your pattern here</label>
+            <label for="pattern">Add your pattern here: </label>
             <textarea name="pattern" rows="10" cols="30" v-model="pattern">
                 </textarea>
             <div class="labeled-pattern">
@@ -35,23 +35,24 @@ export default {
             for (let i = 0; i < lines.length; i++) {
                 let line = lines[i];
                 let cleanLine = '';
-                if (!(/^row\s+\d+:/i.test(line))) {
-                    cleanLine = `Row ${i + 1}: ` + line;
-
-
-                }
+                
                 if (/knit (all) (the )?knits and purl (all) (the )?purls/i.test(line)) {
                     knitAllKnitsFound = true;
                     let previousLine = cleanedLines[i - 1]
                     cleanLine = this.convertRow(previousLine);
                 }
-                else if (knitAllKnitsFound && i % 2 == 0 && i > 0) {
+                else if (knitAllKnitsFound && i % 2 == 1 && i > 0) {
                     let previousLine = cleanedLines[i - 1]
                     cleanLine = this.convertRow(previousLine);
 
                 }
                 else {
                     cleanLine = cleanLine || line;
+                }
+                if (!(/^row\s+\d+:/i.test(cleanLine))) {
+                    cleanLine = `Row ${i + 1}: ` + cleanLine;
+
+
                 }
                 cleanedLines.push(cleanLine);
             }
@@ -65,7 +66,7 @@ export default {
                 let match = /[kp](\d+)/.exec(spacedRow[i]);
                 console.log(match);
                 if (match) {
-                    let stitchType = match[0];
+                    let stitchType = match[0].charAt(0);
                     console.log(stitchType);
                     let number = parseInt(match[1], 10);
 
